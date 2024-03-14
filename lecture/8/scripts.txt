@@ -1,0 +1,106 @@
+
+touch Dockerfile
+
+dockerfile contains : 
+
+FROM public.ecr.aws/amazonlinux/amazonlinux:latest
+
+# Install dependencies
+RUN yum update -y && \
+ yum install -y httpd
+
+# Install apache and write hello world message
+RUN echo 'Hello World!' > /var/www/html/index.html
+
+# Configure apache
+RUN echo 'mkdir -p /var/run/httpd' >> /root/run_apache.sh && \
+ echo 'mkdir -p /var/lock/httpd' >> /root/run_apache.sh && \
+ echo '/usr/sbin/httpd -D FOREGROUND' >> /root/run_apache.sh && \
+ chmod 755 /root/run_apache.sh
+
+EXPOSE 80
+
+CMD /root/run_apache.sh
+
+
+docker build -t hello-world
+
+
+docker images --filter reference=hello-world
+
+
+docker run -t -i -p 80:80 hello-world
+
+
+aws ecr create-repository --repository-name hello-repository --region region
+
+docker tag hello-world aws_account_id.dkr.ecr.region.amazonaws.com/hello-repository
+
+aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 679909736995.dkr.ecr.eu-north-1.amazonaws.com
+
+docker push aws_account_id.dkr.ecr.region.amazonaws.com/hello-repository
+
+aws ecr delete-repository --repository-name hello-repository --region region --force
+
+
+ტასკ
+{
+  "family": "my-web-app",
+  "taskRoleArn": "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/YOUR_TASK_ROLE",
+  "executionRoleArn": "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "networkMode": "bridge",
+  "containerDefinitions": [
+    {
+      "name": "web-app-container",
+      "image": "YOUR_AWS_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/YOUR_REPOSITORY_NAME:YOUR_TAG",
+      "cpu": 256,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "ENV_VAR_NAME",
+          "value": "ENV_VAR_VALUE"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/YOUR_LOG_GROUP",
+          "awslogs-region": "YOUR_REGION",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "cpu": "512",
+  "memory": "1024"
+}
+
+
+
+
+
+
+--რეპოს ჯსონ
+{
+    "repository": {
+        "registryId": "aws_account_id",
+        "repositoryName": "hello-repository",
+        "repositoryArn": "arn:aws:ecr:region:aws_account_id:repository/hello-repository",
+        "createdAt": 1505337806.0,
+        "repositoryUri": "aws_account_id.dkr.ecr.region.amazonaws.com/hello-repository"
+    }
+}
+
+
+

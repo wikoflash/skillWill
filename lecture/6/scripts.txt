@@ -1,0 +1,4 @@
+
+sudo mkfs -t ext4 /dev/sdf
+sudo mkdir /mnt/ebs
+sudo mount /dev/sdf /mnt/ebs/

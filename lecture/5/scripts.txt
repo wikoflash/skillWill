@@ -1,0 +1,27 @@
+--update and install apache 
+--ავოტმატურად გასაყოლებელი სკრიპტები
+
+#!/bin/bash
+yum update -y
+yum install -y httpd 
+systemctl start httpd
+systemctl enable httpd
+
+-- ავოტმატური შესრულებული და გაშვებისას არსებული ლოგები
+
+/var/log/cloud-init-output.log
+
+--ამ სკრიპტის შეცვლა მოგიწევთ თვენი მონაცემების მიხედვით  cli-ისთვის ავოტმატურად გასაშვებად
+
+aws ec2 run-instances \ 
+--image-id ami-0a23a9827c6dab833 \ 
+--count 1 \ 
+--instance-type t2.micro \ 
+--key-name MyKeyPair \ 
+--security-groups MySecurityGroup \
+--region eu-central-1
+
+
+
+
+
