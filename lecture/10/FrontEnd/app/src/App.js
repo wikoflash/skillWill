@@ -8,15 +8,18 @@ function App() {
     const [cpuUsage, setCpuUsage] = useState(null);
     const cpuInterval = useRef(null);
 
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/login', { username, password });
+            const response = await axios.post(`${backendUrl}/login`, { username, password });
             alert(response.data.message);
         } catch (error) {
             console.error('Login error', error);
         }
     };
+
 
     const increaseCpuUsage = () => {
         if (!cpuTaskRunning) {
@@ -38,7 +41,7 @@ function App() {
     };
 
     const startBackendCpuLoad = () => {
-        axios.post('http://localhost:3000/start-cpu-load')
+        axios.post( `${backendUrl}/start-cpu-load`)
             .then(() => {
                 fetchCpuUsage();
             })
@@ -46,7 +49,7 @@ function App() {
     };
 
     const stopBackendCpuLoad = () => {
-        axios.post('http://localhost:3000/stop-cpu-load')
+        axios.post( `${backendUrl}/stop-cpu-load`)
             .then(() => {
                 setCpuUsage(null);
                 console.log('CPU load stopped');
@@ -55,7 +58,7 @@ function App() {
     };
 
     const fetchCpuUsage = () => {
-        axios.get('http://localhost:3000/cpu-usage')
+        axios.get( `${backendUrl}/cpu-usage`)
             .then(response => {
                 setCpuUsage(response.data.averageCpuUsage);
                 if (cpuUsage !== null) {
