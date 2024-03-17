@@ -1,0 +1,12 @@
+backend
+
+
+npm init -y
+npm install express body-parser cors
+
+
+front end 
+
+mkdir app
+cd app
+npx create-react-app .
